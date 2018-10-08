@@ -1,0 +1,39 @@
+1) when i import the project, even after maven update, compilation fails??
+packaging shuld be war not pom
+build fails using maven compiler. Should add servlet-api as provided scope
+<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>4.0.1</version>
+    <scope>provided</scope>
+</dependency>
+
+Test cases not working: NumberFormatException at AddFlightDetailTest
+Maven not able to run test cases: add surefire plugin
+
+<plugin>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>2.19.1</version>
+    </plugin>
+    
+    Code should have no warnings
+    
+    Many test cases are failing. Add more test cases
+    
+    Exception messages should be proper.No link to go back to home page on error?
+    
+    
+    
+Bad things:
+1) Connection not closed!!
+2) return boolean is not returning insert success or no: in dao.. use api properly
+3) Throw your own custom exceptions.. Not IOEXception..SQLException...
+4) Controller throwing exceptions!
+5) int fno = Integer.parseInt(request.getParameter("fno")); //may throw Exception
+6) Not proper exception handling! After catch, statements would be executed
+Nice things:
+1) Added maven compiler plugin
+2) Added tomcat as a plugin
+3) Added welcome page
+4) managed tx on own by setting auto-commit to false
