@@ -47,8 +47,10 @@ public class RegisterUser extends HttpServlet {
 		/*ThreadPoolExecutor executor = (ThreadPoolExecutor) request
 				.getServletContext().getAttribute("executor");
 		executor.submit(new AsyncRequestProcessor(ctx,user,p));*/
+		System.out.println(Thread.currentThread().getName()+"*");
 		ctx.start(()->{
 			try {
+				System.out.println(Thread.currentThread().getName());
 				UserDao.insertUser(user);
 				PassangerDao.insertPassanger(p);
 			} catch (DatabaseException e) {
@@ -56,7 +58,8 @@ public class RegisterUser extends HttpServlet {
 			}
 			ctx.complete();
 		});
-			request.getRequestDispatcher("/login").forward(request, response);
+		//cannot send post request to this url
+			response.sendRedirect("login.jsp");
 			
 	}
 }

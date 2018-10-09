@@ -2,6 +2,7 @@ package com.controller;
 
 import java.io.IOException;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +16,7 @@ import com.exception.DatabaseException;
 import dao.PassangerDao;
 import dao.UserDao;
 
-@WebServlet("/validate")
+@WebServlet(value="/validate", asyncSupported=true)
 public class ValidateUser extends HttpServlet {
 	private static final long serialVersionUID = 4413832082411342836L;
 
@@ -24,26 +25,35 @@ public class ValidateUser extends HttpServlet {
 		String uname = request.getParameter("uname");
 		String password = request.getParameter("password");
 		String utype = request.getParameter("utype");
-		Passanger i = null;
 
 		String user = null;
 		try {
 			user = UserDao.selectUser(uname, password, utype);
-			i = PassangerDao.getPassanger(uname);
-
 			if (user != null) {
-				HttpSession session = request.getSession(true);
-				session.setAttribute("username", uname);
+			AsyncContext ctx=request.startAsync();
+			HttpSession session = request.getSession(true);
+			ctx.start(()->{
+			try {
+				Passanger i = PassangerDao.getPassanger(uname);
 				session.setAttribute("p", i);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+				session.setAttribute("username", uname);
+				
 				session.setAttribute("usertype", utype);
-				request.getRequestDispatcher("/search.jsp").forward(request, response);
+				ctx.complete();
+			});
+			response.sendRedirect("search.jsp");
+			System.out.println("redirected");
 			} else {
 				request.setAttribute("error", "Invalid username/password");
-				request.getRequestDispatcher("/login.jsp").forward(request, response);
+				response.sendRedirect("login.jsp");
 			}
 		} catch (DatabaseException e) {
 			request.setAttribute("error", e.getMessage());
-			request.getRequestDispatcher("/login.jsp").forward(request, response);
+			response.sendRedirect("login.jsp");
 			e.printStackTrace();
 		}
 	}
